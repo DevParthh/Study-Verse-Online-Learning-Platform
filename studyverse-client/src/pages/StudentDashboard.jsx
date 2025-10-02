@@ -1,8 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'; // Make sure useEffect is imported
 import enrollmentService from '../services/enrollmentService';
 import { Link } from 'react-router-dom';
+import { useSearch } from '../context/SearchContext'; // Import useSearch
 
 const StudentDashboard = () => {
+  const { setSearchConfig } = useSearch(); // Get the config function
+  useEffect(() => {
+    setSearchConfig({ isVisible: false }); // Hide search bar on this page
+  }, [setSearchConfig]);
+
   const [enrolledCourses, setEnrolledCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');

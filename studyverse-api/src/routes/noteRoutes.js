@@ -1,48 +1,38 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
-const cloudinary = require('../config/cloudinary');
+const path = require('path');
 const authMiddleware = require('../middleware/authMiddleware');
-const { uploadNote, getNotesForCourse, rateNote, getStandaloneNotes, purchaseNote } = require('../controllers/noteController');
+const { uploadNote, getNotesForCourse, rateNote, getStandaloneNotes, purchaseNote, getReviewsForNote, getNoteById } = require('../controllers/noteController');
 
-// Configure Multer to use Cloudinary for storage
-const storage = new CloudinaryStorage({
-    cloudinary: cloudinary,
-    params: {
-        folder: 'studyverse_notes', // Folder name in your Cloudinary account
-        allowed_formats: ['pdf', 'jpg', 'png'],
-        // public_id is for setting the file name
-        public_id: (req, file) => Date.now() + '-' + file.originalname,
-    },
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, 'uploads/'),
+    filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
 });
 
 const upload = multer({ storage: storage });
 
-
-// @route   GET /api/notes
-// @desc    Get all standalone notes
-// @access  Public
+// General routes
 router.get('/', getStandaloneNotes);
 
-// @route   POST /api/notes
-// @desc    Upload a note for a course
-// @access  Private
-router.post('/', authMiddleware, upload.single('noteFile'), uploadNote);
+// THIS IS THE UPDATED UPLOAD ROUTE
+router.post(
+    '/', 
+    authMiddleware, 
+    upload.fields([
+        { name: 'noteFile', maxCount: 1 },
+        { name: 'previewImage', maxCount: 1 }
+    ]), 
+    uploadNote
+);
 
-// @route   GET /api/notes/course/:courseId
-// @desc    Get all notes for a specific course
-// @access  Public
+// Routes with a specific structure first
 router.get('/course/:courseId', getNotesForCourse);
 
-// @route   POST /api/notes/:id/rate
-// @desc    Rate a note
-// @access  Private
+// Routes with an ID
+router.get('/:id', getNoteById);
+router.get('/:id/reviews', getReviewsForNote);
 router.post('/:id/rate', authMiddleware, rateNote);
-
-// @route   POST /api/notes/:id/purchase
-// @desc    Purchase a note
-// @access  Private
 router.post('/:id/purchase', authMiddleware, purchaseNote);
 
 module.exports = router;

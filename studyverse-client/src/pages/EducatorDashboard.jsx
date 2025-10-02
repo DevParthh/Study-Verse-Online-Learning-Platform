@@ -1,10 +1,17 @@
 import { useState, useEffect } from 'react';
 import courseService from '../services/courseService';
+import { useSearch } from '../context/SearchContext';
+
 
 const EducatorDashboard = () => {
+  const { setSearchConfig } = useSearch();
+  useEffect(() => {
+    setSearchConfig({ isVisible: false });
+  }, [setSearchConfig]);  
   const [myCourses, setMyCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  
   
   // State for the new course form
   const [newCourse, setNewCourse] = useState({ title: '', description: '' });
@@ -155,3 +162,4 @@ const EducatorDashboard = () => {
 };
 
 export default EducatorDashboard;
+

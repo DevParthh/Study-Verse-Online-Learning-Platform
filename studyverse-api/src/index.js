@@ -23,6 +23,7 @@ app.get('/', (req, res) => {
     res.send('StudyVerse API is running!');
 });
 
+app.use('/uploads', express.static('uploads'));
 app.use('/api/auth', authRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/notes', noteRoutes);

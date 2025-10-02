@@ -1,38 +1,15 @@
-import { Outlet, Link } from 'react-router-dom';
-import { useAuth } from './context/AuthContext'; // We get our hook from the context file
+import { Outlet } from 'react-router-dom';
+import Header from './components/layout/Header';
+import Footer from './components/layout/Footer';
 
 function App() {
-  // Get the user state and the logout function from our global context
-  const { user, logout } = useAuth();
-
   return (
-    <div>
-      <nav>
-        <Link to="/">Home</Link>
-
-        {user ? (
-          // If user is logged in, show this:
-          <>
-            <span> | Welcome! </span>
-              {user.role === 'educator' && (
-                <Link to="/dashboard/educator">Educator Dashboard</Link>
-              )}
-              {user.role === 'student' && (
-                <Link to="/dashboard/student">My Courses</Link>
-              )}
-            <button onClick={logout}>Logout</button>
-          </>
-        ) : (
-          // If user is logged out, show this:
-          <>
-            | <Link to="/login">Login</Link> | <Link to="/register">Register</Link>
-          </>
-        )}
-      </nav>
-      <hr />
-      <main>
+    <div className="app-container">
+      <Header />
+      <main style={{ padding: '0 30px' }}>
         <Outlet />
       </main>
+      <Footer />
     </div>
   );
 }

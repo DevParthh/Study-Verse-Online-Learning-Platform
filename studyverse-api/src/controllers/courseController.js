@@ -7,7 +7,10 @@ const asyncHandler = require('express-async-handler');
 exports.getAllCourses = async (req, res) => {
     try {
         const courses = await db.query(
-            "SELECT * FROM courses WHERE status = 'approved'"
+            `SELECT c.*, u.name AS teacher_name 
+             FROM courses c 
+             JOIN users u ON c.teacher_id = u.id 
+             WHERE c.status = 'approved'`
         );
         res.json(courses.rows);
     } catch (err) {
